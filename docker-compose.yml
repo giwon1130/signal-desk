@@ -1,0 +1,16 @@
+services:
+  signal-desk-api:
+    build:
+      context: ../signal-desk-api
+    container_name: signal-desk-api
+    ports:
+      - "8091:8091"
+
+  signal-desk-web:
+    build:
+      context: ../signal-desk-web
+    container_name: signal-desk-web
+    ports:
+      - "4180:80"
+    depends_on:
+      - signal-desk-api

@@ -8,10 +8,21 @@
 - 코스피/코스닥, 나스닥/S&P, 공포지표, 수급, 뉴스, 관심종목, 포트폴리오를 한 흐름으로 연결
 - 무료/공식 데이터 소스 우선, 이후 유료 시세 API로 확장 가능한 구조
 
-초기 구성:
+구성:
 - `signal-desk-api`: Kotlin + Spring Boot API
-- `signal-desk-web`: React + Vite 프론트엔드
-- `docker-compose.yml`: 로컬 통합 실행
+- `signal-desk-web`: React + Vite 웹 대시보드
+- `signal-desk-app`: Expo + React Native 모바일 컴패니언 앱
+- `docker-compose.yml`: 로컬 web + api 통합 실행
+
+역할 분리:
+- `api`: 시장 데이터 수집, 장 상태 계산, 뉴스/차트/수급 응답, 워크스페이스 CRUD
+- `web`: 전체 기능을 다루는 메인 투자 대시보드
+- `app`: 시장/차트/AI 로그를 빠르게 확인하는 모바일 요약 앱
+
+현재 구조:
+- `signal-desk-api`: 워크스페이스 저장소를 인터페이스 뒤로 분리해 향후 PostgreSQL 전환 준비
+- `signal-desk-web`: 탭 컴포넌트, 데이터 hook, 뉴스/포맷 유틸 기준으로 구조 정리
+- `signal-desk-app`: 홈 탭에서 관심종목/포트폴리오 요약까지 확인 가능한 모바일 컴패니언 앱
 
 현재 구현 범위:
 - `시장` 탭
@@ -52,6 +63,11 @@
 - 미국 지수: `FRED`
 - 뉴스: `Google News RSS`
 
+저장 구조:
+- 시장 데이터는 외부 공개 데이터 기반으로 수집
+- 관심종목, 포트폴리오, AI 추천 로그, 모의투자 데이터는 현재 API의 로컬 파일 저장소로 관리
+- 이후 PostgreSQL 기반 사용자 저장소로 전환 예정
+
 속도 구조:
 - 초기 진입은 `summary`, `sections`, `news`로 분리
 - 탭 전환 시 `watchlist`, `portfolio`, `ai-recommendations`, `paper-trading`를 지연 로드
@@ -59,6 +75,7 @@
 - 첫 실데이터 수집 이후에는 `summary/sections` 응답이 매우 빠르게 재사용됨
 - 차트는 동적 로딩으로 분리해 초기 로딩 부담 완화
 - 시장 탭 차트 모듈은 lazy import로 분리되어 첫 진입 번들 축소
+- 웹은 탭별 에러/로딩 상태를 분리해 한 탭 실패가 전체 실패처럼 보이지 않게 처리
 
 주요 API:
 - `GET /api/v1/market/summary`
@@ -81,13 +98,21 @@
 
 로컬 실행:
 ```bash
-cd /Users/g/workspace/signal-desk
+cd /Users/g/workspace/public/finance/signal-desk
 docker compose up --build
+```
+
+모바일 앱 실행:
+```bash
+cd /Users/g/workspace/public/finance/signal-desk-app
+npm install
+npm run web
 ```
 
 기본 포트:
 - web: `http://localhost:4180`
 - api: `http://localhost:8091/api/v1/market/overview`
+- app(web preview): `http://localhost:8081`
 
 릴리즈 체크:
 1. `GET /api/v1/market/sections`에서 차트 라벨이 오늘 날짜(`MM/dd`)로 노출되는지 확인

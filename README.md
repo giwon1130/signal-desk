@@ -65,8 +65,9 @@
 
 저장 구조:
 - 시장 데이터는 외부 공개 데이터 기반으로 수집
-- 관심종목, 포트폴리오, AI 추천 로그, 모의투자 데이터는 현재 API의 로컬 파일 저장소로 관리
-- 이후 PostgreSQL 기반 사용자 저장소로 전환 예정
+- 관심종목, 포트폴리오, AI 추천 로그, 모의투자 데이터는 기본적으로 API의 로컬 파일 저장소로 관리
+- `signal-desk-api`는 JDBC 저장소 모드를 이미 지원하며, PostgreSQL로 전환해 같은 워크스페이스 CRUD를 사용할 수 있다
+- 루트 `docker-compose.yml`은 기본 파일 저장 모드 기준이고, JDBC/PostgreSQL 검증용 compose는 `signal-desk-api/docker-compose.jdbc.yml`에 별도로 둔다
 
 속도 구조:
 - 초기 진입은 `summary`, `sections`, `news`로 분리
@@ -102,6 +103,9 @@ cd /Users/g/workspace/public/finance/signal-desk
 docker compose up --build
 ```
 
+- compose에는 `restart: unless-stopped`와 healthcheck를 포함했다.
+- `signal-desk-web`은 `signal-desk-api`가 healthy 상태가 된 뒤 기동한다.
+
 모바일 앱 실행:
 ```bash
 cd /Users/g/workspace/public/finance/signal-desk-app
@@ -112,7 +116,22 @@ npm run web
 기본 포트:
 - web: `http://localhost:4180`
 - api: `http://localhost:8091/api/v1/market/overview`
-- app(web preview): `http://localhost:8081`
+- app(web preview): Expo가 사용 가능한 포트로 기동하며, 고정 포트로 가정하지 않는다
+
+배포/검증 예시:
+```bash
+curl -i http://127.0.0.1:8091/api/v1/market/summary
+curl -i http://127.0.0.1:8091/api/v1/market/watchlist
+curl -i http://127.0.0.1:4180/
+```
+
+JDBC/PostgreSQL 모드 검증 예시:
+```bash
+cd /Users/g/workspace/public/finance/signal-desk-api
+docker compose -f docker-compose.jdbc.yml up --build
+```
+
+- 루트 compose와 JDBC 검증 compose는 둘 다 `8091`을 사용하므로 동시에 실행하지 않는다.
 
 릴리즈 체크:
 1. `GET /api/v1/market/sections`에서 차트 라벨이 오늘 날짜(`MM/dd`)로 노출되는지 확인

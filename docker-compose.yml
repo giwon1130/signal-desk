@@ -3,6 +3,13 @@ services:
     build:
       context: ../signal-desk-api
     container_name: signal-desk-api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8091/api/v1/market/summary >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 8s
+      retries: 10
+      start_period: 30s
     ports:
       - "8091:8091"
 
@@ -10,7 +17,15 @@ services:
     build:
       context: ../signal-desk-web
     container_name: signal-desk-web
+    restart: unless-stopped
     ports:
       - "4180:80"
     depends_on:
-      - signal-desk-api
+      signal-desk-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s

@@ -1,6 +1,6 @@
 # SignalDesk
 
-`SignalDesk`는 한국주식과 미국주식을 나눠 보고, 수급·공포지표·뉴스·포트폴리오·AI 추천·모의투자까지 한 제품 안에서 관리하는 주식 인텔리전스 서비스다.
+`SignalDesk`는 한국주식과 미국주식을 나눠 보고, 수급·공포지표·뉴스·포트폴리오·AI 추천·모의투자와 Pizza·Bar 계열 실험 대체지표까지 한 제품 안에서 관리하는 주식 인텔리전스 서비스다.
 
 핵심 방향:
 - 실시간 단타 앱이 아니라 `개인 투자자용 의사결정 플랫폼`
@@ -29,7 +29,7 @@
   - 한국/미국 분리
   - 코스피/코스닥, 나스닥/S&P
   - 공포/열기 지표
-  - 실험 지표(Pentagon Pizza Index, Policy Buzz 등 alt-data)
+  - 실험 지표(Pentagon Pizza Index, Policy Buzz, Bar Counter-Signal 등 alt-data)
   - 개인/외국인/기관 수급
   - 주요 뉴스
 - `종목` 탭

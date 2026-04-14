@@ -29,6 +29,7 @@
   - 한국/미국 분리
   - 코스피/코스닥, 나스닥/S&P
   - 공포/열기 지표
+  - 실험 지표(Pentagon Pizza Index, Policy Buzz 등 alt-data)
   - 개인/외국인/기관 수급
   - 주요 뉴스
 - `종목` 탭
